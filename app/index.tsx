@@ -67,7 +67,7 @@ export default function HomeScreen() {
     setRefreshing(true);
     setOffset(0);
     setHasMore(true);
-    fetchImages(0, true); // replace current data
+    fetchImages(0, true);
   };
   const renderItem = ({ item }: any) => (
     <Pressable

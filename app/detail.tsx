@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Platform,
@@ -11,22 +12,21 @@ import {
   useColorScheme,
   View,
 } from "react-native";
-
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const showToast = (message: string) => {
   if (Platform.OS === "android") {
     ToastAndroid.show(message, ToastAndroid.SHORT);
   } else {
-    Alert.alert("", message); // iOS fallback
+    Alert.alert("", message);
   }
 };
 
 export default function DetailScreen() {
   const { image }: any = useLocalSearchParams();
   const isDark = useColorScheme() === "dark";
-
   const [aspectRatio, setAspectRatio] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     first: "",
@@ -40,12 +40,11 @@ export default function DetailScreen() {
       Image.getSize(
         image,
         (width, height) => setAspectRatio(width / height),
-        (err) => console.log("Image size error:", err)
+        (err: any) => console.log("Image size error:", err)
       );
     }
   }, [image]);
 
-  // Validation
   const validate = () => {
     const first = form.first.trim();
     const last = form.last.trim();
@@ -91,23 +90,53 @@ export default function DetailScreen() {
     return true;
   };
 
-  // Submit function now logs data instead of calling API
-  const submit = () => {
+  const submit = async () => {
     if (!validate()) return;
 
-    // Log form data + image to console
-    console.log("Form Data Submitted:");
-    console.log({
-      first_name: form.first.trim(),
-      last_name: form.last.trim(),
-      email: form.email.trim(),
-      phone: form.phone.trim(),
-      user_image: image,
-    });
+    setLoading(true);
 
-    showToast("Form submitted successfully!");
-    // Optionally go back
-    router.back();
+    try {
+      const formData = new FormData();
+
+      formData.append("first_name", form.first.trim());
+      formData.append("last_name", form.last.trim());
+      formData.append("email", form.email.trim());
+      formData.append("phone", form.phone.trim());
+
+      if (image) {
+        const filename = image.split("/").pop() || "photo.jpg";
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : "image/jpeg";
+
+        formData.append("user_image", {
+          uri: image,
+          name: filename,
+          type,
+        } as any);
+      }
+
+      const response = await fetch(
+        "http://dev3.xicomtechnologies.com/xttest/getdata.php?user_id=108&offset=2&type=popular",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.status === "success") {
+        showToast("Form submitted successfully!");
+        router.back();
+      } else {
+        showToast("Submission failed");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      showToast("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -120,7 +149,6 @@ export default function DetailScreen() {
       className={`${isDark ? "bg-[#121212]" : "bg-[#F2F2F2]"} `}
     >
       <View className="flex-1 px-4 pb-10">
-        {/* Image */}
         <Image
           source={{ uri: image }}
           resizeMode="contain"
@@ -128,9 +156,7 @@ export default function DetailScreen() {
           style={{ aspectRatio }}
         />
 
-        {/* Form Container */}
         <View className="rounded-lg p-4 ">
-          {/* First Name */}
           <Text className="text-lg font-semibold mb-2">First Name</Text>
           <TextInput
             placeholder="Enter your first name"
@@ -139,7 +165,6 @@ export default function DetailScreen() {
             onChangeText={(t) => setForm({ ...form, first: t })}
           />
 
-          {/* Last Name */}
           <Text className="text-lg font-semibold mb-2">Last Name</Text>
           <TextInput
             placeholder="Enter your last name"
@@ -148,7 +173,6 @@ export default function DetailScreen() {
             onChangeText={(t) => setForm({ ...form, last: t })}
           />
 
-          {/* Email */}
           <Text className="text-lg font-semibold mb-2">Email</Text>
           <TextInput
             placeholder="Enter your email address"
@@ -158,7 +182,6 @@ export default function DetailScreen() {
             onChangeText={(t) => setForm({ ...form, email: t })}
           />
 
-          {/* Phone */}
           <Text className="text-lg font-semibold mb-2">Phone</Text>
           <TextInput
             placeholder="Enter phone number"
@@ -169,12 +192,18 @@ export default function DetailScreen() {
             onChangeText={(t) => setForm({ ...form, phone: t })}
           />
 
-          {/* Submit */}
           <Pressable
-            className="bg-blue-500 py-3 rounded-xl  items-center mb-10"
+            className={`py-3 rounded-xl items-center mb-10 ${
+              loading ? "bg-blue-300" : "bg-blue-500"
+            }`}
             onPress={submit}
+            disabled={loading}
           >
-            <Text className="text-white text-base font-semibold">Submit</Text>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-white text-base font-semibold">Submit</Text>
+            )}
           </Pressable>
         </View>
       </View>
