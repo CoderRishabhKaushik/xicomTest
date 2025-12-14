@@ -5,10 +5,10 @@ import {
   Alert,
   Image,
   Platform,
-  Pressable,
   Text,
   TextInput,
   ToastAndroid,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from "react-native";
@@ -34,6 +34,13 @@ export default function DetailScreen() {
     email: "",
     phone: "",
   });
+
+  const inputBg = isDark ? "#1E1E1E" : "#FFFFFF";
+  const inputText = isDark ? "#FFFFFF" : "#000000";
+  const placeholderColor = isDark ? "#9CA3AF" : "#6B7280";
+  const labelColor = isDark ? "#FFFFFF" : "#000000";
+  const borderColor = isDark ? "#374151" : "#D1D5DB";
+  const cardBg = isDark ? "#121212" : "#F2F2F2";
 
   useEffect(() => {
     if (image) {
@@ -146,7 +153,7 @@ export default function DetailScreen() {
       keyboardShouldPersistTaps="handled"
       extraScrollHeight={Platform.OS === "android" ? 120 : 80}
       contentContainerStyle={{ flexGrow: 1 }}
-      className={`${isDark ? "bg-[#121212]" : "bg-[#F2F2F2]"} `}
+      style={{ backgroundColor: cardBg }}
     >
       <View className="flex-1 px-4 pb-10">
         <Image
@@ -156,44 +163,68 @@ export default function DetailScreen() {
           style={{ aspectRatio }}
         />
 
-        <View className="rounded-lg p-4 ">
-          <Text className="text-lg font-semibold mb-2">First Name</Text>
+        <View className="rounded-lg p-4">
+          <Text
+            style={{ color: labelColor }}
+            className="text-lg font-semibold mb-2"
+          >
+            First Name
+          </Text>
           <TextInput
             placeholder="Enter your first name"
-            placeholderTextColor="gray"
-            className="border border-gray-300 rounded-full px-3 py-3 mb-4 text-black  bg-white"
+            placeholderTextColor={placeholderColor}
+            style={{ backgroundColor: inputBg, color: inputText, borderColor }}
+            className="border rounded-full px-4 py-3 mb-4"
             onChangeText={(t) => setForm({ ...form, first: t })}
           />
 
-          <Text className="text-lg font-semibold mb-2">Last Name</Text>
+          <Text
+            style={{ color: labelColor }}
+            className="text-lg font-semibold mb-2"
+          >
+            Last Name
+          </Text>
           <TextInput
             placeholder="Enter your last name"
-            placeholderTextColor="gray"
-            className="border border-gray-300 rounded-full px-3 py-3 mb-4 text-black  bg-white"
+            placeholderTextColor={placeholderColor}
+            style={{ backgroundColor: inputBg, color: inputText, borderColor }}
+            className="border rounded-full px-4 py-3 mb-4"
             onChangeText={(t) => setForm({ ...form, last: t })}
           />
 
-          <Text className="text-lg font-semibold mb-2">Email</Text>
+          <Text
+            style={{ color: labelColor }}
+            className="text-lg font-semibold mb-2"
+          >
+            Email
+          </Text>
           <TextInput
             placeholder="Enter your email address"
-            placeholderTextColor="gray"
+            placeholderTextColor={placeholderColor}
             keyboardType="email-address"
-            className="border border-gray-300 rounded-full px-3 py-3 mb-4 text-black  bg-white"
+            style={{ backgroundColor: inputBg, color: inputText, borderColor }}
+            className="border rounded-full px-4 py-3 mb-4"
             onChangeText={(t) => setForm({ ...form, email: t })}
           />
 
-          <Text className="text-lg font-semibold mb-2">Phone</Text>
+          <Text
+            style={{ color: labelColor }}
+            className="text-lg font-semibold mb-2"
+          >
+            Phone
+          </Text>
           <TextInput
             placeholder="Enter phone number"
-            placeholderTextColor="gray"
+            placeholderTextColor={placeholderColor}
             keyboardType="number-pad"
             maxLength={10}
-            className="border border-gray-300 rounded-full px-3 py-3 mb-4 text-black  bg-white"
+            style={{ backgroundColor: inputBg, color: inputText, borderColor }}
+            className="border rounded-full px-4 py-3 mb-6"
             onChangeText={(t) => setForm({ ...form, phone: t })}
           />
 
-          <Pressable
-            className={`py-3 rounded-xl items-center mb-10 ${
+          <TouchableOpacity
+            className={`py-3 rounded-xl items-center ${
               loading ? "bg-blue-300" : "bg-blue-500"
             }`}
             onPress={submit}
@@ -204,7 +235,7 @@ export default function DetailScreen() {
             ) : (
               <Text className="text-white text-base font-semibold">Submit</Text>
             )}
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAwareScrollView>
