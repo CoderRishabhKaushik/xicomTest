@@ -1,12 +1,13 @@
-// 👉 CLEAN EXPO-ROUTER (HYBRID) – 2 SCREENS + LIGHT/DARK MODE
-
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
-import { StatusBar, useColorScheme } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "react-native";
+
+import "../global.css";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
