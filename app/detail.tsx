@@ -9,6 +9,7 @@ import {
   TextInput,
   ToastAndroid,
   useColorScheme,
+  View,
 } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -111,61 +112,72 @@ export default function DetailScreen() {
 
   return (
     <KeyboardAwareScrollView
-      className={`flex-1 px-4 ${isDark ? "bg-[#121212]" : "bg-white"}`}
-      enableOnAndroid={true}
-      extraScrollHeight={20}
+      enableOnAndroid
+      keyboardDismissMode="on-drag"
       keyboardShouldPersistTaps="handled"
+      extraScrollHeight={Platform.OS === "android" ? 120 : 80}
+      contentContainerStyle={{ flexGrow: 1 }}
+      className={`${isDark ? "bg-[#121212]" : "bg-[#F2F2F2]"} `}
     >
-      {/* Image */}
-      <Image
-        source={{ uri: image }}
-        resizeMode="contain"
-        className="w-full rounded-lg mb-4"
-        style={{ aspectRatio }}
-      />
+      <View className="flex-1 px-4 pb-10">
+        {/* Image */}
+        <Image
+          source={{ uri: image }}
+          resizeMode="contain"
+          className="w-full rounded-lg mb-4"
+          style={{ aspectRatio }}
+        />
 
-      {/* First Name */}
-      <TextInput
-        placeholder="First name"
-        placeholderTextColor="#999"
-        className="border border-gray-300 rounded-md px-3 py-2 mb-2 text-black bg-white"
-        onChangeText={(t) => setForm({ ...form, first: t })}
-      />
+        {/* Form Container */}
+        <View className="rounded-lg p-4 ">
+          {/* First Name */}
+          <Text className="text-lg font-semibold mb-2">First Name</Text>
+          <TextInput
+            placeholder="Enter your first name"
+            placeholderTextColor="gray"
+            className="border border-gray-300 rounded-full px-3 py-3 mb-4 text-black  bg-white"
+            onChangeText={(t) => setForm({ ...form, first: t })}
+          />
 
-      {/* Last Name */}
-      <TextInput
-        placeholder="Last name"
-        placeholderTextColor="#999"
-        className="border border-gray-300 rounded-md px-3 py-2 mb-2 text-black bg-white"
-        onChangeText={(t) => setForm({ ...form, last: t })}
-      />
+          {/* Last Name */}
+          <Text className="text-lg font-semibold mb-2">Last Name</Text>
+          <TextInput
+            placeholder="Enter your last name"
+            placeholderTextColor="gray"
+            className="border border-gray-300 rounded-full px-3 py-3 mb-4 text-black  bg-white"
+            onChangeText={(t) => setForm({ ...form, last: t })}
+          />
 
-      {/* Email */}
-      <TextInput
-        placeholder="Email"
-        placeholderTextColor="#999"
-        keyboardType="email-address"
-        className="border border-gray-300 rounded-md px-3 py-2 mb-2 text-black bg-white"
-        onChangeText={(t) => setForm({ ...form, email: t })}
-      />
+          {/* Email */}
+          <Text className="text-lg font-semibold mb-2">Email</Text>
+          <TextInput
+            placeholder="Enter your email address"
+            placeholderTextColor="gray"
+            keyboardType="email-address"
+            className="border border-gray-300 rounded-full px-3 py-3 mb-4 text-black  bg-white"
+            onChangeText={(t) => setForm({ ...form, email: t })}
+          />
 
-      {/* Phone */}
-      <TextInput
-        placeholder="Phone"
-        placeholderTextColor="#999"
-        keyboardType="number-pad"
-        maxLength={10}
-        className="border border-gray-300 rounded-md px-3 py-2 mb-2 text-black bg-white"
-        onChangeText={(t) => setForm({ ...form, phone: t })}
-      />
+          {/* Phone */}
+          <Text className="text-lg font-semibold mb-2">Phone</Text>
+          <TextInput
+            placeholder="Enter phone number"
+            placeholderTextColor="gray"
+            keyboardType="number-pad"
+            maxLength={10}
+            className="border border-gray-300 rounded-full px-3 py-3 mb-4 text-black  bg-white"
+            onChangeText={(t) => setForm({ ...form, phone: t })}
+          />
 
-      {/* Submit */}
-      <Pressable
-        className="bg-green-500 py-3 rounded-lg mt-4 items-center"
-        onPress={submit}
-      >
-        <Text className="text-white text-base font-semibold">Submit</Text>
-      </Pressable>
+          {/* Submit */}
+          <Pressable
+            className="bg-blue-500 py-3 rounded-xl  items-center mb-10"
+            onPress={submit}
+          >
+            <Text className="text-white text-base font-semibold">Submit</Text>
+          </Pressable>
+        </View>
+      </View>
     </KeyboardAwareScrollView>
   );
 }

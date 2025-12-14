@@ -1,15 +1,14 @@
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   Pressable,
   Text,
   useColorScheme,
   View,
 } from "react-native";
-
 export default function HomeScreen() {
   const isDark = useColorScheme() === "dark";
 
@@ -83,14 +82,16 @@ export default function HomeScreen() {
       <Image
         source={{ uri: item.xt_image }}
         className="w-full rounded-lg"
-        resizeMode="contain"
-        style={{ aspectRatio: 1 }}
+        contentFit="contain"
+        transition={300}
+        cachePolicy="memory-disk"
+        style={{ width: "100%", aspectRatio: 1 }}
       />
     </Pressable>
   );
 
   return (
-    <View className={`flex-1 ${isDark ? "bg-[#121212]" : "bg-gray-100"}`}>
+    <View className={`flex-1 ${isDark ? "bg-[#121212]" : "bg-[#F2F2F2]"}`}>
       <FlatList
         data={data}
         renderItem={renderItem}
@@ -100,7 +101,7 @@ export default function HomeScreen() {
         onRefresh={onRefresh}
         ListFooterComponent={() =>
           hasMore ? (
-            <View className="mb-10 items-center">
+            <View className="mb-20 items-center">
               <Pressable
                 onPress={loadMore}
                 disabled={loading}
