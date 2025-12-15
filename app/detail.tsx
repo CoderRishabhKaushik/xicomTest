@@ -98,51 +98,102 @@ export default function DetailScreen() {
   };
 
   const submit = async () => {
-    if (!validate()) return;
+    console.log("SUBMIT STARTED ");
+
+    // 1️⃣ Validation
+    if (!validate()) {
+      console.log("❌ VALIDATION FAILED");
+      return;
+    }
+    console.log("✅ VALIDATION PASSED");
 
     setLoading(true);
 
     try {
+      // 2️⃣ Form values
+      console.log("📌 FORM VALUES");
+      console.log("First Name:", form.first);
+      console.log("Last Name:", form.last);
+      console.log("Email:", form.email);
+      console.log("Phone:", form.phone);
+      console.log("Image URI:", image);
+
+      // 3️⃣ FormData creation
       const formData = new FormData();
+      console.log("📦 FormData CREATED");
 
       formData.append("first_name", form.first.trim());
       formData.append("last_name", form.last.trim());
       formData.append("email", form.email.trim());
       formData.append("phone", form.phone.trim());
 
+      console.log("✅ TEXT FIELDS APPENDED");
+
+      // 4️⃣ Image attachment
       if (image) {
         const filename = image.split("/").pop() || "photo.jpg";
         const match = /\.(\w+)$/.exec(filename);
         const type = match ? `image/${match[1]}` : "image/jpeg";
+
+        console.log("🖼 IMAGE DETAILS");
+        console.log("Filename:", filename);
+        console.log("Type:", type);
 
         formData.append("user_image", {
           uri: image,
           name: filename,
           type,
         } as any);
+
+        console.log("✅ IMAGE APPENDED TO FORMDATA");
+      } else {
+        console.log("⚠️ NO IMAGE FOUND");
       }
 
+      // 5️⃣ API call
+      console.log("🚀 API REQUEST STARTED");
+
       const response = await fetch(
-        "http://dev3.xicomtechnologies.com/xttest/getdata.php?user_id=108&offset=2&type=popular",
+        "https://dev3.xicomtechnologies.com/xttest/getdata.php?user_id=108&offset=2&type=popular",
         {
           method: "POST",
           body: formData,
         }
       );
 
-      const result = await response.json();
+      // 6️⃣ HTTP response status
+      console.log("HTTP STATUS:", response.status);
 
+      // 7️⃣ Raw response (read ONCE)
+      const rawText = await response.text();
+      console.log(" RAW API RESPONSE:", rawText);
+
+      // 8️⃣ Parse response safely
+      let result;
+      try {
+        result = JSON.parse(rawText);
+        console.log(" PARSED RESPONSE:", result);
+      } catch (e) {
+        console.log("JSON PARSE ERROR:", e);
+        showToast("Invalid server response");
+        return;
+      }
+
+      // 9️⃣ API result handling
       if (result.status === "success") {
+        console.log(" SUBMISSION SUCCESS");
         showToast("Form submitted successfully!");
         router.back();
       } else {
-        showToast("Submission failed");
+        console.log(" API FAILURE MESSAGE:", result.message);
+        showToast(result.message || "Submission failed");
       }
     } catch (error) {
-      console.error("Upload error:", error);
+      console.log(" FETCH / UPLOAD ERROR:", error);
       showToast("Something went wrong");
     } finally {
       setLoading(false);
+      console.log("SUBMIT FINISHED");
     }
   };
 

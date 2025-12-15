@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -37,9 +37,7 @@ export default function HomeScreen() {
 
       setData((prev) => {
         if (replace) return newImages;
-        const ids = new Set(prev.map((i) => i.id));
-        const unique = newImages.filter((item: any) => !ids.has(item.id));
-        return [...prev, ...unique];
+        return [...prev, ...newImages];
       });
 
       if (newImages.length < 10) {
@@ -69,25 +67,27 @@ export default function HomeScreen() {
     setHasMore(true);
     fetchImages(0, true);
   };
-  const renderItem = ({ item }: any) => (
-    <Pressable
-      className="mb-4"
-      onPress={() =>
-        router.push({
-          pathname: "/detail",
-          params: { image: item.xt_image },
-        })
-      }
-    >
-      <Image
-        source={{ uri: item.xt_image }}
-        className="w-full rounded-lg"
-        contentFit="contain"
-        transition={300}
-        cachePolicy="memory-disk"
-        style={{ width: "100%", aspectRatio: 1 }}
-      />
-    </Pressable>
+  const renderItem = useCallback(
+    ({ item }: any) => (
+      <Pressable
+        className="mb-4"
+        onPress={() =>
+          router.push({
+            pathname: "/detail",
+            params: { image: item.xt_image },
+          })
+        }
+      >
+        <Image
+          source={{ uri: item.xt_image }}
+          contentFit="contain"
+          transition={300}
+          cachePolicy="memory-disk"
+          style={{ width: "100%", aspectRatio: 1 }}
+        />
+      </Pressable>
+    ),
+    []
   );
 
   return (
@@ -95,7 +95,7 @@ export default function HomeScreen() {
       <FlatList
         data={data}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         contentContainerStyle={{ paddingHorizontal: 16 }}
         refreshing={refreshing}
         onRefresh={onRefresh}
